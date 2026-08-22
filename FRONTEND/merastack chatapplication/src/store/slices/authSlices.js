@@ -16,9 +16,9 @@ export const getUser = createAsyncThunk("user/me", async (_, thunkAPI) => {
 export const signUp = createAsyncThunk("auth/signUp", async (data, thunkAPI) => {
   try {
     const response = await axiosInstance.post("/user/sign-up", data);
-    connectSocket(response.data._id)
+    connectSocket(response.data.user_id)
     toast.success("Account created successfully");
-    return response.data;
+    return response.data.user;
   } catch (error) {
     toast.error(error.response?.data?.message);
     return thunkAPI.rejectWithValue(error.response?.data?.message);
