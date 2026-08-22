@@ -1,51 +1,93 @@
-import { Search, Users } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Users } from "lucide-react";
+import { getUsers } from "../store/slices/ChatSlice.js";
+import { setSelectedUser } from "../store/slices/ChatSlice.js";
+import SidebarSkeleton from "../Components/Skelton/SidebarSkelton.jsx";
 
 const Sidebar = () => {
+  const [showOnlineOnly, setShowOnlineOnly] = useState(false);
+  const { users, selectedUser, isUsersLoading } = useSelector(
+    (state) => state.chat
+  );
+  const { onlineUsers } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getUsers());
+  }, [dispatch]);
+
+  const filteredUsers = showOnlineOnly
+    ? users?.filter((user) => onlineUsers.includes(user._id))
+    : users;
+
+  if (isUsersLoading) return <SidebarSkeleton />;
+
   return (
-    <aside className="w-80 border-r border-base-300 flex flex-col">
-      {/* Header */}
-      <div className="p-4 border-b border-base-300">
-        <div className="flex items-center gap-2 mb-4">
-          <Users className="size-5" />
-          <h2 className="font-semibold">Contacts</h2>
+    <aside className="h-full w-20 lg:w-72 border-r border-gray-200 flex flex-col transition-all duration-200 bg-white">
+      <div className="border-b border-gray-200 w-full p-5">
+        <div className="flex items-center gap-2">
+          <Users className="w-6 h-6 text-gray-700" />
+          <span className="font-medium hidden lg:block text-gray-800">
+            Contacts
+          </span>
         </div>
 
-        {/* Search */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-base-content/50" />
-
-          <input
-            type="text"
-            placeholder="Search users..."
-            className="input input-bordered w-full pl-9"
-          />
+        <div className="mt-3 hidden lg:flex items-center gap-2">
+          <label className="cursor-pointer flex items-center gap-2 text-sm text-gray-700">
+            <input
+              type="checkbox"
+              checked={showOnlineOnly}
+              onChange={(e) => setShowOnlineOnly(e.target.checked)}
+              className="w-4 h-4 border-gray-700 text-blue-600 focus:ring-blue-500"
+            />
+            Show online only
+          </label>
+          <span className="text-xs text-gray-500">
+            ({onlineUsers.length - 1} online)
+          </span>
         </div>
       </div>
 
-      {/* Users */}
-      <div className="flex-1 overflow-y-auto p-2">
-        {[1, 2, 3, 4, 5].map((user) => (
-          <button
-            key={user}
-            className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-base-200"
-          >
-            <div className="avatar">
-              <div className="size-12 rounded-full">
+      <div className="overflow-y-auto w-full py-3">
+        {filteredUsers?.length > 0 &&
+          filteredUsers.map((user) => (
+            <button
+              key={user._id}
+              onClick={() => dispatch(setSelectedUser(user))}
+              className={`w-full p-3 flex items-center gap-3 transition-colors rounded-md ${
+                selectedUser?._id === user._id
+                  ? "bg-gray-200 ring-1 ring-gray-200"
+                  : "hover:bg-gray-100"
+              }`}
+            >
+              <div className="relative mx-auto lg:mx-0">
                 <img
-                  src={`https://i.pravatar.cc/150?img=${user + 10}`}
-                  alt="User"
+                  src={user.avatar?.url || "/avatar-holder.avif"}
+                  alt={user.fullName}
+                  className="w-12 h-12 object-cover rounded-full"
                 />
+                {onlineUsers.includes(user._id) && (
+                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full ring-2 ring-white" />
+                )}
               </div>
-            </div>
 
-            <div className="text-left">
-              <h3 className="font-medium">User {user}</h3>
-              <p className="text-sm text-base-content/50">
-                Click to chat
-              </p>
-            </div>
-          </button>
-        ))}
+              <div className="hidden lg:block text-left min-w-0">
+                <div className="font-medium text-gray-800 truncate">
+                  {user.fullName}
+                </div>
+                <div className="text-sm text-gray-500">
+                  {onlineUsers.includes(user._id) ? "Online" : "Offline"}
+                </div>
+              </div>
+            </button>
+          ))}
+
+        {filteredUsers?.length === 0 && (
+          <div className="text-center text-gray-500 py-4">
+            No online users
+          </div>
+        )}
       </div>
     </aside>
   );

@@ -1,8 +1,25 @@
 import { io } from "socket.io-client";
 
-const socket = io("http://localhost:4000", {
-  withCredentials: true,
-  autoConnect: false,
-});
+const SOCKET_URL =
+  import.meta.env.MODE === "development" ? "http://localhost:4000" : "/";
 
-export default socket;
+let socket = null;
+
+export const connectSocket = (userId) => {
+  if (!userId) return null;
+  socket = io(SOCKET_URL, {
+    query: { userId },
+  });
+  return socket;
+};
+
+export const getSocket = () => {
+  return socket;
+};
+
+export const disconnectSocket = () => {
+  if (socket) {
+    socket.disconnect();
+    socket = null;
+  }
+};

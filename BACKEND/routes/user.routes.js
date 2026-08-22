@@ -10,7 +10,7 @@ router.post("/sign-up",signup);
 router.post("/sign-in",signin);
 router.get("/sign-out",IsAuthenticated,signout);
 router.put("/update-profile",IsAuthenticated,updateProfile);
-router.get("/you",IsAuthenticated,getUser);
+router.get("/me",IsAuthenticated,getUser);
 
 
 

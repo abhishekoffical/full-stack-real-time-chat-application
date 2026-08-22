@@ -1,93 +1,137 @@
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Camera, Loader2, Mail, User } from "lucide-react";
+import { updateProfile } from "../store/slices/authSlice.js";
 
 const Profile = () => {
+  const { authUser, isUpdatingProfile } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [formData, setFormData] = useState({
+    fullName: authUser?.fullName || "",
+    email: authUser?.email || "",
+    avatar: authUser?.avatar?.url || "",
+  });
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64Image = reader.result;
+      setSelectedImage(base64Image);
+      setFormData({ ...formData, avatar: base64Image });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleUpdateProfile = (e) => {
+    e.preventDefault();
+    dispatch(updateProfile(formData));
+  };
+
   return (
-    <div className="min-h-screen bg-base-100 flex items-center justify-center p-6">
-      <div className="w-full max-w-2xl">
-        <div className="bg-base-200 rounded-2xl p-8">
-          {/* Heading */}
-          <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold">Profile</h1>
-            <p className="text-base-content/60 mt-1">
-              Manage your profile information
+    <div className="min-h-screen pt-20 bg-gray-50">
+      <div className="max-w-2xl mx-auto px-4 py-8">
+        <div className="bg-white rounded-xl shadow-md p-6 space-y-8">
+          <div className="text-center">
+            <h1 className="text-2xl font-semibold text-gray-800">Profile</h1>
+            <p className="mt-2 text-gray-500">Your profile information</p>
+          </div>
+
+          {/* avatar upload */}
+          <div className="flex flex-col items-center gap-4">
+            <div className="relative">
+              <img
+                src={selectedImage || formData.avatar || "/avatar-holder.avif"}
+                alt="profile"
+                className="w-32 h-32 rounded-full object-top object-cover border-4 border-gray-200"
+              />
+              <label
+                htmlFor="avatar-upload"
+                className={`absolute bottom-0 right-0 bg-gray-800 hover:scale-105 p-2 rounded-full cursor-pointer transition duration-200 ${
+                  isUpdatingProfile ? "animate-pulse pointer-events-none" : ""
+                }`}
+              >
+                <Camera className="w-5 h-5 text-white" />
+                <input
+                  type="file"
+                  id="avatar-upload"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  disabled={isUpdatingProfile}
+                />
+              </label>
+            </div>
+            <p className="text-sm text-gray-400">
+              {isUpdatingProfile
+                ? "Uploading..."
+                : "Click the camera icon to upload your photo"}
             </p>
           </div>
 
-          {/* Avatar */}
-          <div className="flex justify-center mb-8">
-            <div className="relative">
-              <div className="size-32 rounded-full overflow-hidden bg-base-300">
-                <img
-                  src="https://i.pravatar.cc/300?img=12"
-                  alt="Profile"
-                  className="w-full h-full object-cover"
-                />
+          {/* user info */}
+          <div className="space-y-6">
+            <div className="space-y-1.5">
+              <div className="text-sm text-gray-500 flex items-center gap-2">
+                <User className="w-4 h-4" /> Full Name
               </div>
+              <input
+                type="text"
+                value={formData.fullName}
+                onChange={(e) =>
+                  setFormData({ ...formData, fullName: e.target.value })
+                }
+                className="px-4 py-2.5 bg-gray-100 rounded-lg border border-gray-300 text-gray-800 w-full focus:outline-none"
+              />
+            </div>
 
-              <label className="absolute bottom-1 right-1 btn btn-primary btn-circle cursor-pointer">
-                <Camera className="size-5" />
-                <input type="file" className="hidden" accept="image/*" />
-              </label>
+            <div className="space-y-1.5">
+              <div className="text-sm text-gray-500 flex items-center gap-2">
+                <Mail className="w-4 h-4" /> Email Address
+              </div>
+              <input
+                type="email"
+                value={formData.email}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
+                className="px-4 py-2.5 bg-gray-100 rounded-lg border border-gray-300 text-gray-800 w-full focus:outline-none"
+              />
             </div>
           </div>
 
-          <p className="text-center text-sm text-base-content/50 mb-8">
-            Click the camera icon to update your photo
-          </p>
+          <button
+            onClick={handleUpdateProfile}
+            disabled={isUpdatingProfile}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-md transition duration-200 flex items-center justify-center gap-2 disabled:opacity-50"
+          >
+            {isUpdatingProfile ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" /> Updating...
+              </>
+            ) : (
+              "Update Profile"
+            )}
+          </button>
 
-          {/* User Info */}
-          <div className="space-y-5">
-            <div>
-              <label className="label">
-                <span className="label-text font-medium">Full Name</span>
-              </label>
-
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-base-content/40" />
-
-                <input
-                  type="text"
-                  value="John Doe"
-                  readOnly
-                  className="input input-bordered w-full pl-10"
-                />
+          {/* account info */}
+          <div className="mt-6 bg-gray-50 border border-gray-200 rounded-xl p-6">
+            <h2 className="text-lg font-medium text-gray-800 mb-4">
+              Account Information
+            </h2>
+            <div className="space-y-3 text-sm text-gray-600">
+              <div className="flex items-center justify-between py-2 border-b border-gray-200">
+                <span>Member Since</span>
+                <span>{authUser?.createdAt?.split("T")[0]}</span>
               </div>
-            </div>
-
-            <div>
-              <label className="label">
-                <span className="label-text font-medium">Email</span>
-              </label>
-
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-base-content/40" />
-
-                <input
-                  type="email"
-                  value="john@example.com"
-                  readOnly
-                  className="input input-bordered w-full pl-10"
-                />
+              <div className="flex items-center justify-between py-2">
+                <span>Account Status</span>
+                <span className="text-green-600 font-medium">Active</span>
               </div>
-            </div>
-
-            <button className="btn btn-primary w-full">
-              Update Profile
-            </button>
-          </div>
-
-          {/* Account Info */}
-          <div className="divider"></div>
-
-          <div className="text-sm text-base-content/60">
-            <div className="flex justify-between py-2">
-              <span>Account Status</span>
-              <span className="text-success">Active</span>
-            </div>
-
-            <div className="flex justify-between py-2">
-              <span>Member Since</span>
-              <span>August 2026</span>
             </div>
           </div>
         </div>

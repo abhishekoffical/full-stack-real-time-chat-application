@@ -18,8 +18,11 @@ app.use(cors({
 }));
 
 app.use(fileUpload({
-    useTempFiles:true,
+    useTempFiles: true,
     tempFileDir: "./temp/",
+    limits: {
+        fileSize: 10 * 1024 * 1024, // 10 MB
+    },
 }));
 app.use(cookieParser());
 app.use(express.json());

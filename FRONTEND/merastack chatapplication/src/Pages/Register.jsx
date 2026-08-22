@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Eye,
   EyeOff,
@@ -8,224 +10,121 @@ import {
   MessageSquare,
   User,
 } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-
+import { signUp } from "../store/slices/authSlice.js";
 import AuthImagePattern from "../Components/AuthImagePattern.jsx";
-import axiosInstance from "../lib/axios.js";
-import {
-  setUser,
-  setLoading,
-  setError,
-} from "../store/slices/authSlices.js";
 
 const Register = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  const { isLoading, error } = useSelector((state) => state.auth);
-
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+  });
+  const dispatch = useDispatch();
+  const { isSigningUp } = useSelector((state) => state.auth);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-
-    if (password !== confirmPassword) {
-      dispatch(setError("Passwords do not match"));
-      return;
-    }
-
-    try {
-      dispatch(setLoading(true));
-      dispatch(setError(null));
-
-      const response = await axiosInstance.post("/user/register", {
-        fullName,
-        email,
-        password,
-      });
-
-      dispatch(setUser(response.data.user));
-
-      navigate("/");
-    } catch (error) {
-      dispatch(
-        setError(
-          error.response?.data?.message || "Registration failed"
-        )
-      );
-    } finally {
-      dispatch(setLoading(false));
-    }
+    if (!formData.fullName || !formData.email || !formData.password) return;
+    dispatch(signUp(formData));
   };
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-2">
-      {/* Left Side */}
-      <div className="flex flex-col justify-center items-center p-6 sm:p-12">
-        <div className="w-full max-w-md space-y-8">
-
-          {/* Logo / Heading */}
-          <div className="text-center mb-8">
-            <div className="flex flex-col items-center gap-2">
-              <div className="size-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                <MessageSquare className="size-6 text-primary" />
-              </div>
-
-              <h1 className="text-2xl font-bold mt-2">
-                Create Account
-              </h1>
-
-              <p className="text-base-content/60">
-                Get started with your free account
-              </p>
+    <div className="min-h-screen grid lg:grid-cols-2 bg-white">
+      <div className="flex flex-col justify-center items-center px-6 py-12">
+        <div className="w-full max-w-md">
+          <div className="flex flex-col items-center text-center mb-10">
+            <div className="bg-blue-100 p-3 rounded-lg">
+              <MessageSquare className="w-6 h-6 text-blue-600" />
             </div>
+            <h1 className="text-2xl font-bold mt-4 text-gray-800">
+              Create Account
+            </h1>
+            <p className="text-sm text-gray-500 mt-2">
+              Get started with your free account
+            </p>
           </div>
 
-          {/* Error */}
-          {error && (
-            <div className="alert alert-error">
-              <span>{error}</span>
-            </div>
-          )}
-
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
-
-            {/* Full Name */}
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">
-                  Full Name
-                </span>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Full Name
               </label>
-
               <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-base-content/40" />
-
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                  <User className="w-5 h-5" />
+                </span>
                 <input
                   type="text"
-                  placeholder="John Doe"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  className="input input-bordered w-full pl-10"
-                  required
+                  className="w-full border border-gray-300 rounded-md py-2 pl-10 pr-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Jado"
+                  value={formData.fullName}
+                  onChange={(e) =>
+                    setFormData({ ...formData, fullName: e.target.value })
+                  }
                 />
               </div>
             </div>
 
-            {/* Email */}
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">
-                  Email
-                </span>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Email
               </label>
-
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-base-content/40" />
-
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                  <Mail className="w-5 h-5" />
+                </span>
                 <input
                   type="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="input input-bordered w-full pl-10"
-                  required
+                  className="w-full border border-gray-300 rounded-md py-2 pl-10 pr-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="you@gmail.com"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
                 />
               </div>
             </div>
 
-            {/* Password */}
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">
-                  Password
-                </span>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Password
               </label>
-
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-base-content/40" />
-
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                  <Lock className="w-5 h-5" />
+                </span>
                 <input
                   type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="input input-bordered w-full pl-10 pr-10"
-                  required
+                  className="w-full border border-gray-300 rounded-md py-2 pl-10 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="********"
+                  value={formData.password}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
                 />
-
                 <button
                   type="button"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/50"
                 >
                   {showPassword ? (
-                    <EyeOff className="size-5" />
+                    <EyeOff className="w-5 h-5" />
                   ) : (
-                    <Eye className="size-5" />
+                    <Eye className="w-5 h-5" />
                   )}
                 </button>
               </div>
             </div>
 
-            {/* Confirm Password */}
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">
-                  Confirm Password
-                </span>
-              </label>
-
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-base-content/40" />
-
-                <input
-                  type={
-                    showConfirmPassword ? "text" : "password"
-                  }
-                  placeholder="••••••••"
-                  value={confirmPassword}
-                  onChange={(e) =>
-                    setConfirmPassword(e.target.value)
-                  }
-                  className="input input-bordered w-full pl-10 pr-10"
-                  required
-                />
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    setShowConfirmPassword(!showConfirmPassword)
-                  }
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/50"
-                >
-                  {showConfirmPassword ? (
-                    <EyeOff className="size-5" />
-                  ) : (
-                    <Eye className="size-5" />
-                  )}
-                </button>
-              </div>
-            </div>
-
-            {/* Register Button */}
             <button
               type="submit"
-              disabled={isLoading}
-              className="btn btn-primary w-full"
+              className="w-full flex justify-center items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-md transition disabled:opacity-50"
+              disabled={isSigningUp}
             >
-              {isLoading ? (
+              {isSigningUp ? (
                 <>
-                  <Loader2 className="size-5 animate-spin" />
-                  Creating Account...
+                  <Loader2 className="w-5 h-5 animate-spin" /> Loading...
                 </>
               ) : (
                 "Create Account"
@@ -233,23 +132,20 @@ const Register = () => {
             </button>
           </form>
 
-          {/* Login Link */}
-          <p className="text-center text-sm text-base-content/60">
-            Already have an account?{" "}
-            <a
-              href="/login"
-              className="text-primary hover:underline"
-            >
-              Login
-            </a>
-          </p>
+          <div className="text-center mt-6">
+            <p className="text-sm text-gray-600">
+              Already have an account?{" "}
+              <Link to="/login" className="text-blue-600 font-medium">
+                Sign in
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
 
-      {/* Right Side */}
       <AuthImagePattern
         title="Join our community"
-        subtitle="Connect with friends, share messages, and stay connected."
+        subtitle="Connect with friends and family, share your thoughts, and stay updated with the latest news."
       />
     </div>
   );

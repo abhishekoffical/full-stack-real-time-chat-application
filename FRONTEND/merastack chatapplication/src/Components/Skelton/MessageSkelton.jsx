@@ -1,26 +1,17 @@
+const skeletonMessages = Array(6).fill(null);
+
 const MessageSkeleton = () => {
   return (
-    <div className="p-4 space-y-6">
-      {[1, 2, 3, 4, 5].map((item) => (
+    <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      {skeletonMessages.map((_, idx) => (
         <div
-          key={item}
-          className={`flex items-end gap-2 ${
-            item % 2 === 0 ? "justify-end" : "justify-start"
+          key={idx}
+          className={`flex items-start gap-3 ${
+            idx % 2 === 0 ? "justify-start" : "justify-end flex-row-reverse"
           }`}
         >
-          {item % 2 !== 0 && (
-            <div className="w-8 h-8 rounded-full bg-gray-300 animate-pulse"></div>
-          )}
-
-          <div
-            className={`h-10 rounded-2xl bg-gray-300 animate-pulse ${
-              item % 2 === 0 ? "w-40" : "w-52"
-            }`}
-          ></div>
-
-          {item % 2 === 0 && (
-            <div className="w-8 h-8 rounded-full bg-gray-300 animate-pulse"></div>
-          )}
+          <div className="w-10 h-10 rounded-full bg-gray-300 animate-pulse shrink-0" />
+          <div className="h-16 w-[200px] bg-gray-300 rounded-lg animate-pulse" />
         </div>
       ))}
     </div>

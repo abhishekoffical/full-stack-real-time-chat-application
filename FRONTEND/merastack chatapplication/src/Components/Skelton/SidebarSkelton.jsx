@@ -1,21 +1,25 @@
-import { Users } from "lucide-react";
+const skeletonContacts = Array(8).fill(null);
 
 const SidebarSkeleton = () => {
   return (
-    <aside className="w-80 border-r border-base-300 p-4">
-      <div className="flex items-center gap-2 mb-6">
-        <Users className="size-5" />
-        <div className="h-5 w-24 bg-base-300 rounded animate-pulse"></div>
+    <aside className="h-full w-20 lg:w-72 border-r border-gray-200 flex flex-col transition-all duration-200 bg-white">
+      <div className="border-b border-gray-200 w-full p-5">
+        <div className="flex items-center gap-2">
+          <span className="font-medium hidden lg:block text-gray-800">
+            Contacts
+          </span>
+        </div>
       </div>
 
-      <div className="space-y-4">
-        {[1, 2, 3, 4, 5, 6].map((item) => (
-          <div key={item} className="flex items-center gap-3">
-            <div className="size-12 rounded-full bg-base-300 animate-pulse"></div>
-
-            <div className="flex-1 space-y-2">
-              <div className="h-4 w-32 bg-base-300 rounded animate-pulse"></div>
-              <div className="h-3 w-20 bg-base-300 rounded animate-pulse"></div>
+      <div className="overflow-y-auto w-full py-3">
+        {skeletonContacts.map((_, idx) => (
+          <div key={idx} className="w-full p-3 flex items-center gap-3">
+            <div className="relative mx-auto lg:mx-0">
+              <div className="w-12 h-12 rounded-full bg-gray-300 animate-pulse" />
+            </div>
+            <div className="hidden lg:block text-left min-w-0 flex-1">
+              <div className="h-4 w-32 bg-gray-300 rounded animate-pulse mb-2" />
+              <div className="h-3 w-16 bg-gray-300 rounded animate-pulse" />
             </div>
           </div>
         ))}

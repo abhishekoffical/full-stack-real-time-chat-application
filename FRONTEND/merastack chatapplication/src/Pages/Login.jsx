@@ -1,126 +1,86 @@
 import { useState } from "react";
-import {
-  Eye,
-  EyeOff,
-  Loader2,
-  Lock,
-  Mail,
-  MessageSquare,
-} from "lucide-react";
-import { useDispatch,useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import AuthImagePattern from "../components/AuthImagePattern.jsx";
-import axiosInstance from "../lib/axios";
-import { setUser, setLoading, setError } from "../store/slices/authSlices.js";
+import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Eye, EyeOff, Loader2, Lock, Mail, MessageSquare } from "lucide-react";
+import { login } from "../store/slices/authSlice.js";
+import AuthImagePattern from "../Components/AuthImagePattern.jsx";
 
 const Login = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const dispatch = useDispatch();
+  const { isLoggingIn } = useSelector((state) => state.auth);
 
-  const { isLoading } = useSelector((state) => state.auth);
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-
-    try {
-      dispatch(setLoading(true));
-      dispatch(setError(null));
-
-      const response = await axiosInstance.post("/user/login", {
-        email,
-        password,
-      });
-
-      dispatch(setUser(response.data.user));
-
-      navigate("/");
-    } catch (error) {
-      dispatch(
-        setError(
-          error.response?.data?.message || "Login failed"
-        )
-      );
-    } finally {
-      dispatch(setLoading(false));
-    }
+    if (!formData.email || !formData.password) return;
+    dispatch(login(formData));
   };
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-2">
-      <div className="flex flex-col justify-center items-center p-6 sm:p-12">
-        <div className="w-full max-w-md space-y-8">
-
-          <div className="text-center mb-8">
-            <div className="flex flex-col items-center gap-2">
-              <div className="size-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                <MessageSquare className="size-6 text-primary" />
-              </div>
-
-              <h1 className="text-2xl font-bold mt-2">
-                Welcome Back
-              </h1>
-
-              <p className="text-base-content/60">
-                Login to your account
-              </p>
+    <div className="min-h-screen grid lg:grid-cols-2 bg-white">
+      {/* left form */}
+      <div className="flex flex-col justify-center items-center px-6 py-12">
+        <div className="w-full max-w-md">
+          <div className="flex flex-col items-center text-center mb-10">
+            <div className="bg-blue-100 p-3 rounded-lg">
+              <MessageSquare className="w-6 h-6 text-blue-600" />
             </div>
+            <h1 className="text-2xl font-bold mt-4 text-gray-800">
+              Welcome Back
+            </h1>
+            <p className="text-sm text-gray-500 mt-2">
+              Sign in to your account
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">
-                  Email
-                </span>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Email
               </label>
-
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-base-content/40" />
-
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                  <Mail className="w-5 h-5" />
+                </span>
                 <input
                   type="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="input input-bordered w-full pl-10"
-                  required
+                  className="w-full border border-gray-300 rounded-md py-2 pl-10 pr-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="you@gmail.com"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
                 />
               </div>
             </div>
 
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">
-                  Password
-                </span>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Password
               </label>
-
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-base-content/40" />
-
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                  <Lock className="w-5 h-5" />
+                </span>
                 <input
                   type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="input input-bordered w-full pl-10 pr-10"
-                  required
+                  className="w-full border border-gray-300 rounded-md py-2 pl-10 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="********"
+                  value={formData.password}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
                 />
-
                 <button
                   type="button"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/50"
                 >
                   {showPassword ? (
-                    <EyeOff className="size-5" />
+                    <EyeOff className="w-5 h-5" />
                   ) : (
-                    <Eye className="size-5" />
+                    <Eye className="w-5 h-5" />
                   )}
                 </button>
               </div>
@@ -128,35 +88,33 @@ const Login = () => {
 
             <button
               type="submit"
-              disabled={isLoading}
-              className="btn btn-primary w-full"
+              className="w-full flex justify-center items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-md transition disabled:opacity-50"
+              disabled={isLoggingIn}
             >
-              {isLoading ? (
+              {isLoggingIn ? (
                 <>
-                  <Loader2 className="size-5 animate-spin" />
-                  Logging in...
+                  <Loader2 className="w-5 h-5 animate-spin" /> Loading...
                 </>
               ) : (
-                "Login"
+                "Sign In"
               )}
             </button>
           </form>
-
-          <p className="text-center text-sm text-base-content/60">
-            Don't have an account?{" "}
-            <a
-              href="/register"
-              className="text-primary hover:underline"
-            >
-              Create account
-            </a>
-          </p>
+           {/*footer*/}
+          <div className="text-center mt-6">
+            <p className="text-sm text-gray-600">
+              Don't have an account?{" "}
+              <Link to="/register" className="text-blue-600 font-medium">
+                Create account
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
 
       <AuthImagePattern
-        title="Connect with your friends"
-        subtitle="Send messages and stay connected with the people you care about."
+        title={"Welcome back!"}
+        subtitle={"Sign in to continue your conversations and catch up with your messages."}
       />
     </div>
   );
