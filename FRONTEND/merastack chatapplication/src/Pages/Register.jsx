@@ -10,7 +10,7 @@ import {
   MessageSquare,
   User,
 } from "lucide-react";
-import { signUp } from "../store/slices/authSlice.js";
+import { signUp } from "../store/slices/authSlices.js";
 import AuthImagePattern from "../Components/AuthImagePattern.jsx";
 
 const Register = () => {

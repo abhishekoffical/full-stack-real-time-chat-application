@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import Sidebar from "../Components/Sidebar.jsx";
-import NoChatSelected from "../components/NoChatSelected.jsx";
+import NoChatSelected from "../Components/NoChatSelected.jsx";
 import ChatContainer from "../Components/ChatContainer.jsx";
 
 const Home = () => {

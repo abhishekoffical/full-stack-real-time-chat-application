@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getMessages } from "../store/slices/ChatSlice.js";
-import { getSocket } from "../lib/socket";
+// import { getSocket } from "../lib/socket";
 import ChatHeader from "../Components/ChatHeader.jsx";
 import MessageInput from "../Components/MessageInput.jsx";
 import MessageSkeleton from "../Components/Skelton/MessageSkelton.jsx";

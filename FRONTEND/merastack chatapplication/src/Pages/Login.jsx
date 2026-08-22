@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Eye, EyeOff, Loader2, Lock, Mail, MessageSquare } from "lucide-react";
-import { login } from "../store/slices/authSlice.js";
+import { login } from "../store/slices/authSlices.js";
 import AuthImagePattern from "../Components/AuthImagePattern.jsx";
 
 const Login = () => {

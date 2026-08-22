@@ -24,7 +24,7 @@ const App = () => {
   useEffect(()=>{
     if(authUser){
       const socket=connectSocket(authUser._id)
-      socket.on("getOnlineUser",(users)=>{
+      socket.on("getOnlineUsers",(users)=>{
         dispatch(setOnlineUsers(users));
       })
 
