@@ -44,8 +44,8 @@ const Sidebar = () => {
             Show online only
           </label>
           <span className="text-xs text-gray-500">
-            ({onlineUsers.length - 1} online)
-          </span>
+           ({Math.max(onlineUsers.length - 1, 0)} online)
+         </span>
         </div>
       </div>
 

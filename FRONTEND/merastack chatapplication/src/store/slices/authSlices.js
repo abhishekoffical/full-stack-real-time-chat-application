@@ -6,7 +6,7 @@ import { connectSocket, disconnectSocket } from "../../lib/socket.js";
 export const getUser = createAsyncThunk("user/me", async (_, thunkAPI) => {
   try {
     const res = await axiosInstance.get("/user/me");
-    connectSocket( res.data.user._id);
+   
     return res.data.user;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response?.data?.message);
@@ -16,7 +16,7 @@ export const getUser = createAsyncThunk("user/me", async (_, thunkAPI) => {
 export const signUp = createAsyncThunk("auth/signUp", async (data, thunkAPI) => {
   try {
     const response = await axiosInstance.post("/user/sign-up", data);
-    connectSocket(response.data.user_id)
+    
     toast.success("Account created successfully");
     return response.data.user;
   } catch (error) {
@@ -38,7 +38,7 @@ export const login = createAsyncThunk(
       // Login ke baad current user fetch karo
       const userResponse = await axiosInstance.get("/user/me");
 
-      connectSocket(userResponse.data.user._id);
+      
 
       return userResponse.data.user;
 
@@ -70,7 +70,7 @@ export const updateProfile = createAsyncThunk(
     try {
       const response = await axiosInstance.put("/user/update-profile", data);
       toast.success("Profile updated successfully");
-      return response.data;
+      return response.data.user;
     } catch (error) {
       toast.error(error.response?.data?.message);
       return thunkAPI.rejectWithValue(error.response?.data?.message);
