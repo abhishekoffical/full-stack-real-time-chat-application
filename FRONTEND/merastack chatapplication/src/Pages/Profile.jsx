@@ -14,23 +14,26 @@ const Profile = () => {
     avatar: authUser?.avatar?.url || "",
   });
 
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  const [avatarFile, setAvatarFile] = useState(null);
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      const base64Image = reader.result;
-      setSelectedImage(base64Image);
-      setFormData({ ...formData, avatar: base64Image });
-    };
-    reader.readAsDataURL(file);
-  };
 
-  const handleUpdateProfile = (e) => {
-    e.preventDefault();
-    dispatch(updateProfile(formData));
-  };
+const handleImageUpload = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  setAvatarFile(file);
+  const reader = new FileReader();
+  reader.onload = () => setSelectedImage(reader.result); // sirf preview
+  reader.readAsDataURL(file);
+};
+
+const handleUpdateProfile = (e) => {
+  e.preventDefault();
+  const data = new FormData();
+  data.append("fullName", formData.fullName);
+  data.append("email", formData.email);
+  if (avatarFile) data.append("avatar", avatarFile);   // asli File object
+  dispatch(updateProfile(data));
+};
 
   return (
     <div className="min-h-screen pt-20 bg-gray-50">
